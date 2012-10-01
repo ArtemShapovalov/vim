@@ -330,21 +330,21 @@ inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
 \ "\" \\<lt>bs>\\<lt>C-n>\"\<CR>"
 imap <C-@> <C-Space>
 
-" http://www.instanceof.ru/linux/vim/translate
-"map <F5>  :call TRANSLATE()<cr>
-"function TRANSLATE()
-   "let  a=getline('.')
-   "let co=col('.')-1
-   "let starts=strridx(a," ",co)
-   "let ends = stridx(a," ",co)
-   "if ends==-1
-       "let ends=strlen(a)
-   "endif
-   "let res = strpart(a,starts+1,ends-starts)
-   "let cmds = "sdcv -n " . res
-   "let out = system(cmds)
-   "echo out
-"endfunction
+"http://www.instanceof.ru/linux/vim/translate
+map <F8>  :call TRANSLATE()<cr>
+function TRANSLATE()
+   let  a=getline('.')
+   let co=col('.')-1
+   let starts=strridx(a," ",co)
+   let ends = stridx(a," ",co)
+   if ends==-1
+	   let ends=strlen(a)
+   endif
+   let res = strpart(a,starts+1,ends-starts)
+   let cmds = "sdcv -n " . res
+   let out = system(cmds)
+   echo out
+endfunction
 
 
 
