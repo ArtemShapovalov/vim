@@ -478,6 +478,9 @@ let g:pdv_cfg_Uses = 1
 
 " Включаем фолдинг для блоков классов/функций
 let php_folding = 1
+	map <F5> <Esc>:EnableFastPHPFolds<Cr> 
+	map <F6> <Esc>:EnablePHPFolds<Cr> 
+	map <F7> <Esc>:DisablePHPFolds<Cr> 
 
 " Не использовать короткие теги PHP для поиска PHP блоков
 let php_noShortTags = 1
