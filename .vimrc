@@ -65,8 +65,7 @@ if has("cscope") && filereadable("/usr/bin/cscope")
 endif
 
 set list                " Отображение спецсимволов
-    "set listchars=tab:→→,trail:·,nbsp:~
-    set listchars=tab:│┈,trail:·,nbsp:~
+set listchars=tab:│┈,trail:·,nbsp:~
 
 set nowrap              " Отключение переноса длинных строк
 
@@ -74,7 +73,7 @@ set background=dark     " Использование цветов для тем�
 set foldenable          " Фолдинг сворачивание кода
 "set foldmethod=indent
 "set foldmethod=marker
-"set foldmarker={,}
+set foldmarker={,}
 
 " Сохранение и восстановление фолдинга
 au BufWinLeave * silent! mkview
@@ -92,16 +91,6 @@ filetype plugin indent on " определять подсветку на осн�
 augroup filetype
     autocmd BufNewFile,BufRead <Directory Path>/*.html set filetype=php
 augroup END
-
-"if &term=="xterm"
-     "set t_Co=8
-     "set t_Sb=[4%dm
-     "set t_Sf=[3%dm
-     "colorscheme darkdevel
-"else
-    "set t_Co=256
-    "colorscheme vitamins
-"endif
 
 " Term
 colorscheme vitamins
@@ -214,30 +203,9 @@ map <C-e> ,ci
 nmap <C-e> ,ci
 imap <C-e> <ESC>,cii
 
-
-
-" Вырезать-копировать-вставить через Ctrl
-
-" CTRL-X - вырезать
-"vnoremap <C-X> +x
-
-" CTRL-C - копировать
-"vnoremap <C-C> +y
-
-" CTRL-V вставить под курсором
-"map <C-V> +gP
-
-" Отменить-вернуть через Ctrl
-
-" отмена действия
-" map <c-z> u
-" imap <c-z> <C-O>u
-
 " вернуть отменённое назад
 noremap <c-y> <C-R>
 inoremap <c-y> <C-O><C-R>
-
-iabbrev _vd var_dump($);<left><left><C-R>
 
 set noautochdir
 let NERDTreeChDirMode=2
@@ -246,7 +214,7 @@ map  <F3> :NERDTreeToggle<CR>
 
 if has("gui_running")
     set cursorline                          " Подсвечивать текущую строку в GUI режиме
-    au VimEnter * NERDTree /home/www/       " Автоматическое открытие NERDTree
+    au VimEnter * NERDTree /home/artem/site       " Автоматическое открытие NERDTree
     let NERDTreeHighlightCursorline=1       " Подсветка файла под курсором
 else
     set nocursorline                        " Не подсвечивать текущую строку в консоли
@@ -274,10 +242,6 @@ inoremap <Up> <C-o>gk
 imap <leader>z <c-y><leader>
 map <leader>z <c-y><leader>
 vmap <leader>z <c-y><leader>
-
-"imap <leader>z <c-y><leader>
-"map <leader>z <c-y><leader>
-"vmap <leader>z <c-y><leader>
 
 " Перемещение между окнами по Ctrl+Стрелки
 if has('gui_macvim')
@@ -345,10 +309,6 @@ au FileType xml set omnifunc=xmlcomplete#CompleteTag
 au FileType javascript set omnifunc=javascriptcomplete#CompleteJ
 au FileType css set omnifunc=csscomplete#CompleteC
 
-"http://www.instanceof.ru/linux/vim/translate
-map <F8>  :call TRANSLATE()<cr>
-
-
 
 "А для того, что бы не.отображать переменные в PHP-файлах, достаточно в .vimrc прописать строчку:
     let tlist_php_settings = 'php;c:class;f:function;d:constant'
@@ -411,6 +371,7 @@ set noswapfile          " Запретить создание swap файлов
 
 " Изменить цвет курсора в консоли при изменении режима ввода
 "============CSS block================
+
 if &term =~ "xterm" || &term =~ "xterm-256color" 
     let &t_SI = "\<Esc>]12;red\x7"
     let &t_EI = "\<Esc>]12;blue\x7"
@@ -444,9 +405,6 @@ set mousehide
     " поиск по ключевым словам (что позволяет нажмите <Sk> на любое ключевое
     " слово)
     autocmd BufNewFile,Bufread *.php set keywordprg="help"
-" 
-
-
 
 " Включаем фолдинг для блоков классов/функций
 let php_folding = 1
@@ -467,7 +425,6 @@ let g:pdv_cfg_Author = 'Artem Shapovalov <artem@shapovalov.biz>'
 let g:pdv_cfg_Copyright = 'Artem Shapovalov'
 let g:pdv_cfg_License = 'PHP Version 5.3 {@link http://www.php.net/license/}'
 
-"
 au Filetype php,html,xml,xsl source ~/.vim/scripts/closetag.vim
 
 
