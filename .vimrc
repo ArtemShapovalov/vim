@@ -475,8 +475,9 @@ function! VarDebug()
         let ends=strlen(a)
     endif
     let res = strpart(a,starts+1,ends-starts)
-    "echo matchstr(res, '[\w\-\>]\*')
-    let res = expand('<cword>')
+    "[^(][$a-zA-Z0-9->:]*\((.*)\)*[^)]
+    let res = matchstr(res, '\$*\<.*\>\(()\)*')
+    "let res = expand('<cword>')
     "echo res
     if (strpart(res,0,1)!='$')
         let pref = '$'
