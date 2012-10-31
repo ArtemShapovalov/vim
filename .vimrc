@@ -8,6 +8,9 @@ let mapleader = ","
 
 set confirm " использовать диалоги вместо сообщений об ошибках
 
+"Не выгружать буфер, когда переключаемся на другой файл
+set hidden
+
 " Отключить оповещение об ошибка
 set novb
  
@@ -38,8 +41,6 @@ set nu
 " Only do this part when compiled with support for autocommands
 if has("autocmd")
   augroup redhat
-    " In text files, always limit the width of text to 120 characters
-    autocmd BufRead *.php set tw=80
     " When editing a file, always jump to the last cursor position
     autocmd BufReadPost *
     \ if line("'\"") > 0 && line ("'\"") <= line("$") |
@@ -64,12 +65,12 @@ if has("cscope") && filereadable("/usr/bin/cscope")
    set csverb
 endif
 
-set list                " Отображение спецсимволов
-set listchars=tab:│┈,trail:·,nbsp:~
+" Отслеживать изменения файлов
+set autoread
+
 
 set nowrap              " Отключение переноса длинных строк
 
-set background=dark     " Использование цветов для темного фона
 set foldenable          " Фолдинг сворачивание кода
 "set foldmethod=indent
 "set foldmethod=marker
@@ -92,16 +93,49 @@ augroup filetype
     autocmd BufNewFile,BufRead <Directory Path>/*.html set filetype=php
 augroup END
 
-" Term
-colorscheme vitamins
-if &term =~ "xterm"
-    set t_Co=256            " set 256 colors
-    " Подсветка спец символов
-    autocmd VimEnter,Colorscheme * :hi SpecialKey ctermfg=8
+" Set extra options when running in GUI mode
+if has("gui_running")
+    " Отключаем панель инструментов
+    set guioptions-=T
+    " Отключаем левый скролл
+    set guioptions-=L
+    " Отключаем меню
+    set guioptions-=m
+    " Отключение копирования при выделении
+    set guioptions-=a
+
+    "Антиалиасинг для шрифтов
+    set antialias
+
+    " Опции сессии
+    set sessionoptions=curdir,buffers,tabpages ",resize,winpos,winsize
+
+    " Сохранение сессии
+    autocmd VimLeavePre * silent mksession! $HOME/.vim/session.vim
+
+    set guitablabel=%M\ %t
 endif
-" подсветка символов начиная с 81 позиции
+
+" set 256 colors
+set t_Co=256
+
+" Использование цветов для темного фона
+set background=dark
+
+" установка цвктовой схемы
+colorscheme vitamins
+
+" Подсветка спец символов
+autocmd VimEnter,Colorscheme * :hi SpecialKey ctermfg=8
+
+" Подсветка длины строки в 81 символ
+set colorcolumn=81
+" изменение цвета строки
+highlight ColorColumn guibg=#2d2d2d ctermbg=246
+
+" подсветка символов начиная с 120 позиции
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-match OverLength /\%81v.\+/
+    match OverLength /\%120v.\+/
 
 set ignorecase              " Игнорирование регистра при поиске
 
@@ -140,11 +174,6 @@ set wcm=<Tab>
         " Выбор формата концов строк (dos - <CR><NL>, unix - <NL>, mac - <CR>) <--
     " Меню Encoding <--
 
-    " Включение автоматического разбиения строки на несколько
-    " строк фиксированной длины
-        menu Textwidth.off :set textwidth=0<CR>
-        menu Textwidth.on :set textwidth=120<CR><ESC>ggvGgq
-
 map <F12> :emenu Encoding.<Tab>
 " блок меню
 
@@ -171,6 +200,7 @@ function! MyKeyMapHighlight()
       hi StatusLine ctermfg=DarkRed guifg=DarkRed
    endif
 endfunction
+
 call MyKeyMapHighlight() " при старте Vim устанавливать цвет статусной строки
 autocmd WinEnter * :call MyKeyMapHighlight() " при смене окна обновлять информацию о раскладках
 " использовать Ctrl+F для переключения раскладок
@@ -178,8 +208,6 @@ cmap <silent> <C-F> <C-^>
 imap <silent> <C-F> <C-^>X<Esc>:call MyKeyMapHighlight()<CR>a<C-H>
 nmap <silent> <C-F> a<C-^><Esc>:call MyKeyMapHighlight()<CR>
 vmap <silent> <C-F> <Esc>a<C-^><Esc>:call MyKeyMapHighlight()<CR>gv
-
-
 
 " Кодировка терминала
 set termencoding=utf-8
@@ -190,18 +218,19 @@ set laststatus=2
 " Включаем отображение выполняемой в данный момент команды в правом нижнем углу экрана.
 " К примеру, если вы наберете 2d, то в правом нижнем углу экрана Vim отобразит строку 2d.
 set showcmd
+
 " Включаем отображение дополнительной информации в статусной строке
-set statusline=%<%f%h%m%r%=format=%{&fileformat}\ file=%{&fileencoding}\ enc=%{&encoding}\ %b\ 0x%B\ %l,%c%V\ %P
+"set statusline=%<%f%h%m%r%=format=%{&fileformat}\ file=%{&fileencoding}\ enc=%{&encoding}\ %b\ 0x%B\ %l,%c%V\ %P
 
 nmap <F2> :w<CR>
 vmap <F2> <esc>:w<cr>i
 imap <F2> <esc>:w<cr>i
 
 
-" C-e - комментировать/раскомментировать (при помощи NERD_Comment)
-map <C-e> ,ci
-nmap <C-e> ,ci
-imap <C-e> <ESC>,cii
+" C-\  комментировать/раскомментировать (при помощи NERD_Comment)
+nmap <c-\> ,ci
+vmap <c-\> ,cigv
+imap <c-\> <esc>,cii
 
 " вернуть отменённое назад
 noremap <c-y> <C-R>
@@ -310,7 +339,7 @@ au FileType javascript set omnifunc=javascriptcomplete#CompleteJ
 au FileType css set omnifunc=csscomplete#CompleteC
 
 
-"А для того, что бы не.отображать переменные в PHP-файлах, достаточно в .vimrc прописать строчку:
+"Не.отображать переменные в PHP-файлах, достаточно в .vimrc прописать строчку:
     let tlist_php_settings = 'php;c:class;f:function;d:constant'
 " close all folds except for current file
     let Tlist_File_Fold_Auto_Close = 1
@@ -335,6 +364,9 @@ au FileType css set omnifunc=csscomplete#CompleteC
     imap <F4> <Esc>:TlistToggle<CR>
     vmap <F4> <Esc>:TlistToggle<CR>
 
+
+set nolist                " Отображение спецсимволов
+"set listchars=tab:│┈,trail:·,nbsp:~
 
 " Настройки табуляции табуляция равна 4 пробелам
 set tabstop=4
@@ -377,7 +409,7 @@ if &term =~ "xterm" || &term =~ "xterm-256color"
     let &t_EI = "\<Esc>]12;blue\x7"
 endif
 
-" НастVройки подсветки отступов
+" Настройки подсветки отступов
 let g:indent_guides_enable_on_vim_startup = 0
 let g:indent_guides_auto_colors = 0
 let g:indent_guides_color_change_percent = 5
@@ -406,17 +438,19 @@ set mousehide
     " слово)
     autocmd BufNewFile,Bufread *.php set keywordprg="help"
 
+
+
 " Включаем фолдинг для блоков классов/функций
 let php_folding = 1
-    map <F5> <Esc>:EnableFastPHPFolds<Cr> 
-    map <F6> <Esc>:EnablePHPFolds<Cr> 
-    map <F7> <Esc>:DisablePHPFolds<Cr> 
+    map <F5> <Esc>:EnableFastPHPFolds<Cr>
+    map <F6> <Esc>:EnablePHPFolds<Cr>
+    map <F7> <Esc>:DisablePHPFolds<Cr>
 
 
 " PHP Documentor
-inoremap <C-P> <ESC>:call PhpDocSingle()<CR>i 
-nnoremap <C-P> :call PhpDocSingle()<CR> 
-vnoremap <C-P> :call PhpDocRange()<CR> 
+inoremap <C-P> <ESC>:call PhpDocSingle()<CR>i
+nnoremap <C-P> :call PhpDocSingle()<CR>
+vnoremap <C-P> :call PhpDocRange()<CR>
 
 let g:pdv_cfg_Type = 'mixed'
 let g:pdv_cfg_Package = ''
@@ -425,6 +459,33 @@ let g:pdv_cfg_Author = 'Artem Shapovalov <artem@shapovalov.biz>'
 let g:pdv_cfg_Copyright = 'Artem Shapovalov'
 let g:pdv_cfg_License = 'PHP Version 5.3 {@link http://www.php.net/license/}'
 
+" Обновление сниппетов
+map <silent><leader>sm :call ReloadAllSnippets()<cr>:echo "Сниппеты перезагружены"<cr>
+
 au Filetype php,html,xml,xsl source ~/.vim/scripts/closetag.vim
 
 
+ 
+function! VarDebug()
+    let  a=getline('.')
+    let co=col('.')-1
+    let starts=strridx(a," ",co)
+    let ends = stridx(a," ",co)
+    if ends==-1
+        let ends=strlen(a)
+    endif
+    let res = strpart(a,starts+1,ends-starts)
+    "echo matchstr(res, '[\w\-\>]\*')
+    let res = expand('<cword>')
+    "echo res
+    if (strpart(res,0,1)!='$')
+        let pref = '$'
+    else
+        let pref = ''
+    endif
+    let res =  'var_dump('.pref.res.');'
+    let l:cursor = getpos(".") 
+    call append (l:cursor[1], res)
+endfunction
+
+nmap <F8> :call VarDebug()<cr>
